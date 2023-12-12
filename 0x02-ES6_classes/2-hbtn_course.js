@@ -30,14 +30,26 @@ export default class HolbertonCourse {
   }
 
   set name(value) {
-    this._name = value;
+    if (typeof (value) === 'string') {
+      this._name = value;
+    } else {
+      throw new TypeError('Name must be a string');
+    }
   }
 
   set length(value) {
-    this._length = value;
+    if (typeof (value) === 'number') {
+      this._length = value;
+    } else {
+      throw new TypeError('Length must be a number');
+    }
   }
 
   set students(value) {
-    this._students = value;
+    if (typeof (students) === 'object') {
+      this._students = students;
+    } else {
+      throw new TypeError('Students must be an object');
+    }
   }
 }
