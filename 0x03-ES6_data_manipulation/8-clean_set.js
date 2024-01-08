@@ -1,10 +1,12 @@
 export default function cleanSet(set, startString) {
   let returnString = '';
   let splitString;
-  if (startString) {
+  if (startString && typeof(startString) === 'string') {
     for (const item of Array.from(set)) {
-      if (item.split(startString) !== item) {
+      console.log(item);
+      if (item && item.split(startString).length !== 1) {
         splitString = item.split(startString);
+        console.log(splitString);
         for (const token of splitString) {
           if (token !== '') {
             returnString += token;
