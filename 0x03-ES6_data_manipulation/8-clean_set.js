@@ -1,7 +1,7 @@
 export default function cleanSet(set, startString) {
   let returnString = '';
   let splitString;
-  if (startString && typeof(startString) === 'string') {
+  if (startString && typeof (startString) === 'string') {
     for (const item of Array.from(set)) {
       console.log(item);
       if (item && item.split(startString).length !== 1) {
