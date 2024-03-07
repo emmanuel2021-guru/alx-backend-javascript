@@ -3,18 +3,17 @@
 // Read a file synchronously with Node.js
 const fs = require('fs');
 
-const countStudents = (CsvFilePath) => {
+const countStudents = (path) => {
   try {
-    const csvData = fs.readFileSync(CsvFilePath, 'utf-8');
+    const csvData = fs.readFileSync(path, 'utf-8');
     const rows = csvData.split('\n');
     let count = 0;
     const headerRow = rows[0].split(',');
     const fieldIndex = headerRow.indexOf('field');
-    // console.log(fieldIndex)
     const firstNameIndex = headerRow.indexOf('firstname');
     if (fieldIndex !== -1) {
       const csStudents = [];
-      const sweStudents = []; // To store the first names of SWE students
+      const sweStudents = [];
       for (let i = 1; i < rows.length; i += 1) {
         if (rows[i].length > 0) {
           count += 1;
