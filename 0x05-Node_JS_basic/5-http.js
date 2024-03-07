@@ -1,48 +1,44 @@
 const http = require('http');
-
-const port = 1245;
-const HostName = 'localhost';
-const CSV_FILE = process.argv[2];
-const countStudents = require('./3-read_file_async');
+const fs = require('fs');
 
 const app = http.createServer((req, res) => {
-  if (req.url === '/') {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Hello Holberton School!');
-  } else if (req.url === '/students') {
-    countStudents(CSV_FILE)
-      .then((result) => {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'text/plain');
-        const resultString = JSON.stringify(result);
-        const responseObject = JSON.parse(resultString);
-        const final = {
-          totalStudents: responseObject.totalStudents,
-          csStudentsCount: responseObject.csStudentsCount,
-          sweStudentsCount: responseObject.sweStudentsCount,
-          csStudentsList: responseObject.csStudentsList,
-          sweStudentsList: responseObject.sweStudentsList,
-        };
-        res.end(
-          `This is the list of our students
-Number of students: ${final.totalStudents}\n`
-          + `Number of students in CS: ${final.csStudentsCount}. List: ${final.csStudentsList}\n`
-          + `Number of students in SWE: ${final.sweStudentsCount}. List: ${final.sweStudentsList}`,
-        );
-      })
-      .catch((error) => {
-        res.statusCode = 500;
-        res.setHeader('Content-Type', 'text/plain');
-        res.end(`Internal Server Error: ${error}`);
-      });
-  } else {
-    res.statusCode = 404;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Not Found');
-  }
+    const url = req.url;
+
+    if (url === '/') {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('Hello Holberton School!\n');
+    } else if (url === '/students') {
+        const databaseFile = process.argv[2];
+        if (!databaseFile) {
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end('Internal Server Error: Database file not provided\n');
+            return;
+        }
+        
+        fs.readFile(databaseFile, 'utf8', (err, data) => {
+            if (err) {
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end('Internal Server Error: Failed to read database file\n');
+                return;
+            }
+            
+            const students = data.trim().split('\n').filter(line => line.trim() !== '');
+            const totalStudents = students.length;
+            const studentsCS = students.filter(student => student.endsWith('CS')).length;
+            const studentsSWE = students.filter(student => student.endsWith('SWE')).length;
+            const studentsListCS = students.filter(student => student.endsWith('CS')).map(student => student.split(',')[0]);
+            const studentsListSWE = students.filter(student => student.endsWith('SWE')).map(student => student.split(',')[0]);
+
+            const response = `This is the list of our students\nNumber of students: ${totalStudents}\nNumber of students in CS: ${studentsCS}. List: ${studentsListCS.join(', ')}\nNumber of students in SWE: ${studentsSWE}. List: ${studentsListSWE.join(', ')}\n`;
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end(response);
+        });
+    } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('404 Not Found\n');
+    }
 });
 
-app.listen(port, HostName, () => {
-});
+app.listen(1245);
+
 module.exports = app;
