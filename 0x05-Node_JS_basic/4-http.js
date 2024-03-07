@@ -1,49 +1,20 @@
-#!/usr/bin/node
+const http = require("http");
 
-// Reading a file asynchronously with Node.js
-const fs = require('fs');
+const PORT = 1245;
+const HOST = "localhost";
+const app = http.createServer();
 
-const countStudents = (CsvFilePath) => {
-  let count = 0;
-  return new Promise((resolve, reject) => {
-    fs.readFile(CsvFilePath, 'utf-8', (error, csvData) => {
-      if (error) {
-        reject(new Error('Cannot load the database'));
-      } else {
-        const rows = csvData.split('\n');
-        const headerRow = rows[0].split(',');
-        const fieldIndex = headerRow.indexOf('field');
-        const firstNameIndex = headerRow.indexOf('firstname');
-        if (fieldIndex !== -1) {
-          const csStudents = [];
-          const sweStudents = []; // To store the first names of SWE students
-          for (let i = 1; i < rows.length; i += 1) {
-            if (rows[i].length > 0) {
-              count += 1;
-              const row = rows[i].split(',');
-              if (row[fieldIndex] === 'SWE') {
-                sweStudents.push(row[firstNameIndex]);
-              }
-              if (row[fieldIndex] === 'CS') {
-                csStudents.push(row[firstNameIndex]);
-              }
-            }
-          }
-          const result = {
-            totalStudents: count,
-            csStudentsCount: csStudents.length,
-            sweStudentsCount: sweStudents.length,
-            csStudentsList: csStudents.join(', '),
-            sweStudentsList: sweStudents.join(', '),
-          };
-          resolve(result);
-          console.log(`Number of students: ${result.totalStudents}`);
-          console.log(`Number of students in CS: ${result.csStudentsCount}. List: ${result.csStudentsList}`);
-          console.log(`Number of students in SWE: ${result.sweStudentsCount}. List: ${result.sweStudentsList}`);
-        }
-      }
-    });
-  });
-};
+app.on("request", (_, res) => {
+  const responseText = "Hello Holberton School!";
 
-module.exports = countStudents;
+  res.setHeader("Content-Type", "text/plain");
+  res.setHeader("Content-Length", responseText.length);
+  res.statusCode = 200;
+  res.write(Buffer.from(responseText));
+});
+
+app.listen(PORT, HOST, () => {
+  process.stdout.write(`Server listening at -> http://${HOST}:${PORT}\n`);
+});
+
+module.exports = app;
