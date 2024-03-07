@@ -1,12 +1,14 @@
-// 1-stdin.js
+#!/usr/bin/node
 
-process.stdout.write('Welcome to Holberton School, what is your name?\n');
-
-process.stdin.on('data', (data) => {
-  const input = data.toString().trim();
-  if (input !== '') {
-    process.stdout.write(`Your name is: ${input}\r`);
-    process.stdout.write('This important software is now closing\n');
-    process.exit();
-  }
+// Prints to stdin
+const handleUserInput = (input) => {
+  process.stdout.write(`Your name is: ${input}`);
+};
+console.log('Welcome to Holberton School, what is your name?');
+process.stdin.on('data', (input) => {
+  handleUserInput(input);
 });
+process.stdin.on('end', () => {
+  console.log('This important software is now closing');
+});
+module.exports = handleUserInput;
